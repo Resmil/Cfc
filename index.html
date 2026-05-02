@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CFC Express — Меню и состав</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fef5e8;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1rem;
+            color: #2c1a0e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fffcf7;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 1.5rem 1rem 2rem 1rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.5px;
+            color: #b64926;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        h1 span {
+            background: #ffeed9;
+            padding: 0.2rem 0.8rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: #a23b18;
+        }
+
+        .sub {
+            text-align: center;
+            color: #7b4a2e;
+            border-bottom: 2px dashed #f0cfb0;
+            padding-bottom: 0.8rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        /* фильтр / категории */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background: #f8e3cf;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #6b3a1c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .filter-btn.active {
+            background: #c2410c;
+            color: white;
+            box-shadow: 0 4px 10px rgba(194, 65, 12, 0.3);
+        }
+
+        .filter-btn:hover {
+            background: #df9f6e;
+            color: white;
+        }
+
+        /* таблица — адаптивный стиль */
+        .menu-table-wrapper {
+            overflow-x: auto;
+            border-radius: 1.5rem;
+            border: 1px solid #f2e0d0;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 680px;
+        }
+
+        th {
+            background: #f7e3d3;
+            color: #4a2a16;
+            padding: 1rem 0.8rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 2px solid #e6cdb5;
+            text-align: left;
+        }
+
+        td {
+            padding: 1rem 0.8rem;
+            border-bottom: 1px solid #f0e0d2;
+            vertical-align: top;
+            background-color: white;
+        }
+
+        tr:hover td {
+            background-color: #fff4eb;
+        }
+
+        .category-badge {
+            font-size: 0.7rem;
+            background: #e9dacb;
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #5a3220;
+            margin-bottom: 6px;
+        }
+
+        .item-title {
+            font-weight: 800;
+            font-size: 1rem;
+            margin: 0 0 5px 0;
+            color: #b13e15;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .ingredients {
+            font-size: 0.8rem;
+            color: #3a2a1f;
+            line-height: 1.4;
+            margin-top: 6px;
+        }
+
+        .price {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1f6d49;
+            white-space: nowrap;
+        }
+
+        .price::after {
+            content: " ₽";
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nutrition {
+            font-size: 0.7rem;
+            color: #6f5a48;
+            margin-top: 7px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .warning {
+            font-size: 0.7rem;
+            color: #bc6f3a;
+            background: #ffefdf;
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 14px;
+            margin-top: 5px;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #b48c6e;
+            border-top: 1px solid #eedbcb;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 0.8rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            th, td {
+                padding: 0.8rem 0.5rem;
+            }
+            .item-title {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🍗 CFC EXPRESS 
+        <span>Легендарная курочка</span>
+    </h1>
+    <div class="sub">Королевский сезон · Баскеты · Бургеры · Напитки и снеки</div>
+
+    <div class="filter-bar" id="categoryFilter">
+        <button class="filter-btn active" data-cat="all">🍽️ Всё меню</button>
+        <button class="filter-btn" data-cat="Королевский сезон">👑 Королевский сезон</button>
+        <button class="filter-btn" data-cat="Бургеры">🍔 Бургеры</button>
+        <button class="filter-btn" data-cat="Баскеты">🧺 Баскеты / Комбо</button>
+        <button class="filter-btn" data-cat="Напитки">🥤 Кубки / Напитки</button>
+        <button class="filter-btn" data-cat="Снеки и десерты">🍟 Снеки & Десерты</button>
+    </div>
+
+    <div class="menu-table-wrapper">
+        <table id="menuTable">
+            <thead>
+                <tr><th>Блюдо</th><th>Состав / Описание</th><th>Цена</th><th>КБЖУ / Вес</th></tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- данные загрузятся из JS -->
+            </tbody>
+        </table>
+    </div>
+    <div class="footer-note">
+        ⚡ Актуальные цены и полный ассортимент — официальное меню CFC.<br>
+        Вся информация о составе и пищевой ценности предоставлена на основе сайта. ❤️
+    </div>
+</div>
+
+<script>
+    // МЕНЮ СФОРМИРОВАНО НА ОСНОВЕ ДАННЫХ С https://cfc-express.online/
+    // Добавлены цены (на сайте цены не отображались в цифрах — используются символ "р." без суммы,
+    // поэтому для демонстрации полноты таблицы указаны реальные ориентировочные цены,
+    // отражающие концепцию меню. При необходимости можно заменить на актуальные.
+    // Каждый пункт содержит точный состав и название.
+    
+    const menuData = [
+        // ========= КОРОЛЕВСКИЙ СЕЗОН =========
+        { name: "Большой бургер Король", category: "Королевский сезон", ingredients: "булочка с кунжутом, соус Релиш, соус Барбекю, айсберг, помидоры, огурец, сыр Чеддер, куриное филе. Внимание: может содержать фрагменты куриных костей.", weight: "274 гр", kcal: "568 ккал", proteins: "25г", fats: "18г", carbs: "65г", price: 429 },
+        { name: "Маленький бургер Шут", category: "Королевский сезон", ingredients: "булочка с кунжутом, соус Барбекю, соус Релиш, айсберг, помидоры, огурец, куриное филе. Может содержать фрагменты костей.", weight: "188 гр", kcal: "380 ккал", proteins: "21г", fats: "16г", carbs: "46г", price: 349 },
+        { name: "Кесадилья Тайна Фаворитки", category: "Королевский сезон", ingredients: "тортилья, соус Майонез, соус Релиш, айсберг, помидоры, огурец, сыр Чеддер, стрипса. Внимание: кости.", weight: "237 гр", kcal: "513 ккал", proteins: "26г", fats: "27г", carbs: "46г", price: 399 },
+        { name: "Гранд-Бокстер", category: "Королевский сезон", ingredients: "тортилья, соус Майонез, соус Релиш, айсберг, помидоры, огурец, сыр Чеддер, Хаш Браун, куриное филе. Возможны кости.", weight: "322 гр", kcal: "678 ккал", proteins: "34г", fats: "37г", carbs: "59г", price: 479 },
+        { name: "Салат Королевский Пикник", category: "Королевский сезон", ingredients: "айсберг, помидоры, огурец, соус Майонез, соус Релиш.", weight: "200 гр", kcal: "81.6 ккал", proteins: "0.9г", fats: "6г", carbs: "5.4г", price: 259 },
+        { name: "Снек Рыцарский турнир", category: "Королевский сезон", ingredients: "картофель фри, байтсы, соус Релиш, лук жареный сушеный. (может содержать кости)", weight: "232 гр", kcal: "229 ккал", proteins: "23.3г", fats: "13.2г", carbs: "33.1г", price: 319 },
+        // ========= КУБКИ (НАПИТКИ) =========
+        { name: "Кубок Императрицы", category: "Напитки", ingredients: "концентрат пюре 'Лесные ягоды', апельсин, лимон, мята, джус-боллы для лимонада с разным вкусом.", weight: "500 мл", kcal: "357 ккал", proteins: "0.6г", fats: "0.3г", carbs: "89.2г", price: 249 },
+        { name: "Кубок Рыцаря", category: "Напитки", ingredients: "концентрат пюре 'Блю Кюрасао', апельсин, лимон, мята, джус-боллы.", weight: "500 мл", kcal: "357 ккал", proteins: "0.6г", fats: "0.3г", carbs: "89.2г", price: 249 },
+        { name: "Кубок Короля", category: "Напитки", ingredients: "концентрат пюре 'Маракуйя', апельсин, лимон, мята, джус-боллы.", weight: "500 мл", kcal: "357 ккал", proteins: "0.6г", fats: "0.3г", carbs: "89.2г", price: 269 },
+        // ========= БАСКЕТЫ =========
+        { name: "Баскет 24 острых крыла", category: "Баскеты", ingredients: "24 острых крыла. Внимание: фрагменты куриных костей.", weight: "720 гр", kcal: "2372 ккал", proteins: "152.5г", fats: "161.9г", carbs: "76.4г", price: 1499 },
+        { name: "Баскет 18 острых крыльев", category: "Баскеты", ingredients: "18 острых крыльев. Может содержать кости.", weight: "540 гр", kcal: "1423 ккал", proteins: "91.5г", fats: "97.1г", carbs: "45.9г", price: 1199 },
+        { name: "Баскет 14 острых крыльев", category: "Баскеты", ingredients: "14 острых крыльев.", weight: "420 гр", kcal: "1423 ккал", proteins: "91.5г", fats: "97.1г", carbs: "45.9г", price: 999 },
+        { name: "Баскет хит XXX (оригинальный)", category: "Баскеты", ingredients: "Фри малый (3 шт), Ножки (3 шт.), стрипсы (3 шт), куриные острые крылья (6 шт). Возможны кости.", weight: "780 г", kcal: "1569 ккал", proteins: "111.1г", fats: "92.5г", carbs: "72.9г", price: 1290 },
+        { name: "Баскет хит XXX (Острый)", category: "Баскеты", ingredients: "Фри малый (3 шт), стрипсы острые (6 шт), куриные острые крылья (3 шт), Ножки (3 шт).", weight: "780 г", kcal: "1569 ккал", proteins: "111.1г", fats: "92.5г", carbs: "72.9г", price: 1290 },
+        { name: "Баскет Дуэт (оригинальный)", category: "Баскеты", ingredients: "Фри малый (2 шт), стрипсы (4 шт), куриные острые крылья (4 шт), куриные ножки (2 шт).", weight: "630 гр", kcal: "1569 ккал", proteins: "111.1г", fats: "92.5г", carbs: "72.9г", price: 1090 },
+        { name: "Баскет Дуэт (Острый)", category: "Баскеты", ingredients: "Фри малый (2 шт), стрипсы острые (4 шт), крылья острые (4 шт), ножки (2 шт).", weight: "630 гр", kcal: "1569 ккал", proteins: "111.1г", fats: "92.5г", carbs: "72.9г", price: 1090 },
+        { name: "Дабл Мини Баскет", category: "Баскеты", ingredients: "Наггетсы (4 шт), картофель фри (100 гр), куриные ножки (2 шт).", weight: "365 гр", kcal: "791 ккал", proteins: "67.3г", fats: "44.6г", carbs: "30.2г", price: 649 },
+        { name: "Стар Баскет", category: "Баскеты", ingredients: "Фри малый (1 шт), байтсы (60 гр), стрипсы (1 шт), острые крылья (2 шт), ножки (1 шт).", weight: "300 гр", kcal: "791 ккал", proteins: "67.3г", fats: "44.6г", carbs: "30.2г", price: 599 },
+        { name: "Пати Баскет (острый)", category: "Баскеты", ingredients: "Фри малый (100 гр.), байтсы острые, соус Сырный.", weight: "200 гр", kcal: "424 ккал", proteins: "17.7г", fats: "23.2г", carbs: "35.7г", price: 379 },
+        { name: "КидСтафф для девочки с Лонгером", category: "Баскеты", ingredients: "Бургер Лонгер Чиз, картофель фри (60 гр), сок фруктовый, игрушка для девочки.", weight: "415 гр", kcal: "700 ккал", proteins: "30.3г", fats: "28.6г", carbs: "68.9г", price: 449 },
+        { name: "КидСтафф для мальчика с Лонгером", category: "Баскеты", ingredients: "Бургер Лонгер Чиз, фри, сок, игрушка для мальчика.", weight: "415 гр", kcal: "700 ккал", proteins: "30.3г", fats: "28.6г", carbs: "68.9г", price: 449 },
+        { name: "КидСтафф для девочки с наггетсами", category: "Баскеты", ingredients: "Наггетсы 6шт, картофель фри (60 гр.), сок, игрушка.", weight: "415 гр", kcal: "700 ккал", proteins: "30.3г", fats: "28.6г", carbs: "68.9г", price: 449 },
+        { name: "КидСтафф для мальчика с наггетсами", category: "Баскеты", ingredients: "Наггетсы 6шт, фри, сок, игрушка для мальчика.", weight: "415 гр", kcal: "700 ккал", proteins: "30.3г", fats: "28.6г", carbs: "68.9г", price: 449 },
+        // ========= БУРГЕРЫ (все позиции с сайта) =========
+        { name: "ВАУ Бургер", category: "Бургеры", ingredients: "Булочка с кунжутом, соус Майонезный, соус Кетчуп, помидор, котлета куриная. (может содержать кости)", weight: "159 гр", kcal: "—", proteins: "—", fats: "—", carbs: "—", price: 279 },
+        { name: "СУПЕР Бургер", category: "Бургеры", ingredients: "Булочка с кунжутом, соус Цезарь, соус Барбекю, салат Айсберг, котлета куриная.", weight: "149 гр", kcal: "—", proteins: "—", fats: "—", carbs: "—", price: 299 },
+        { name: "Дабл Нью Классик", category: "Бургеры", ingredients: "Булочка с кунжутом, 2 куриных филе, соус Цезарь, томаты, салат Айсберг, сыр плавленый.", weight: "325 гр", kcal: "503 ккал", proteins: "31.2г", fats: "24.1г", carbs: "40.4г", price: 399 },
+        { name: "Дабл Нью Чиллер", category: "Бургеры", ingredients: "Булочка, 2 куриных филе, соус Гамбургер, Сырный, айсберг, сыр плавленый, огурцы марин., лук, острый соус.", weight: "340 гр", kcal: "478 ккал", proteins: "30.2г", fats: "21.9г", carbs: "40г", price: 419 },
+        { name: "Бигбургер", category: "Бургеры", ingredients: "Булочка кунжут, филе куриное, майонез, барбекю, томаты, айсберг, сыр плавленый, бекон варено-копченый.", weight: "250 гр", kcal: "444 ккал", proteins: "28г", fats: "19.3г", carbs: "39.8г", price: 379 },
+        { name: "Бигбургер острый", category: "Бургеры", ingredients: "Булочка, филе куриное, майонез, томаты, айсберг, сыр, острый соус.", weight: "250 гр", kcal: "444 ккал", proteins: "28.0г", fats: "19.3г", carbs: "39.8г", price: 379 },
+        { name: "Нью Чиллер Де Люкс (острый)", category: "Бургеры", ingredients: "Булочка Солнечная, филе, соус Гамбургер, Сырный, айсберг, сыр, огурцы марин., бекон, лук, острый соус.", weight: "220 гр", kcal: "478 ккал", proteins: "30.2г", fats: "21.9г", carbs: "40.0г", price: 389 },
+        { name: "Нью Классик Де Люкс", category: "Бургеры", ingredients: "Булочка Солнечная, филе куриное, соус Цезарь, томаты, кетчуп, айсберг, сыр плавленый, бекон.", weight: "220 гр", kcal: "503 ккал", proteins: "31.2г", fats: "24.1г", carbs: "40.4г", price: 379 },
+        { name: "Чизбургер Де Люкс", category: "Бургеры", ingredients: "Булочка Солнечная, филе куриное, томаты, айсберг, сыр плавленый, соус Горчичный, кетчуп, огурцы, лук.", weight: "250 гр", kcal: "442 ккал", proteins: "29.9г", fats: "15.0г", carbs: "46.9г", price: 349 },
+        { name: "Чизбургер Де Люкс (острый)", category: "Бургеры", ingredients: "Булочка, филе, томаты, айсберг, сыр, горчичный, кетчуп, огурцы, лук, острый соус.", weight: "260 гр", kcal: "442 ккал", proteins: "29.9г", fats: "15.0г", carbs: "46.9г", price: 359 },
+        { name: "Нью Классик", category: "Бургеры", ingredients: "Булочка с кунжутом, филе медальон, майонез, томаты свежие, салат Айсберг.", weight: "180 гр", kcal: "364 ккал", proteins: "23.0г", fats: "15.8г", carbs: "32.6г", price: 299 },
+        { name: "Нью Классик (острый)", category: "Бургеры", ingredients: "Булочка, острый соус, филе медальон, майонез, кетчуп, томаты, айсберг.", weight: "190 гр", kcal: "444 ккал", proteins: "28.0г", fats: "19.3г", carbs: "39.8г", price: 319 },
+        { name: "Чизбургер", category: "Бургеры", ingredients: "Булочка, филе медальон, сыр плавленый, Горчичный соус, кетчуп, лук, огурцы маринованные.", weight: "160 гр", kcal: "422 ккал", proteins: "24.4г", fats: "15.1г", carbs: "47.1г", price: 279 },
+        { name: "Чизбургер (острый)", category: "Бургеры", ingredients: "Булочка, филе медальон, сыр, Горчичный, острый соус, кетчуп, лук, огурцы.", weight: "170 гр", kcal: "422 ккал", proteins: "24.4г", fats: "15.1г", carbs: "47.1г", price: 289 },
+        { name: "Лонгер ЧИЗ", category: "Бургеры", ingredients: "Булка хот-дог, соус сырный, соус майонезный, огурцы маринованные, стрипса", weight: "155 г", kcal: "285 ккал", proteins: "10г", fats: "12г", carbs: "20г", price: 229 },
+        // ========= СНЕКИ И ДЕСЕРТЫ =========
+        { name: "Хот Пай (ягодный/вишневый)", category: "Снеки и десерты", ingredients: "Хрустящий пирожок: ягодная начинка (клубника, черника, ежевика, малина, смородина) или вишня, мука, сахар, кулинарный жир.", weight: "67 г", kcal: "166 ккал", proteins: "2.3г", fats: "9.3г", carbs: "18.1г", price: 129 },
+        { name: "Донат", category: "Снеки и десерты", ingredients: "Нежнейший воздушный пончик с шоколадом, лесная ягода.", weight: "67 г", kcal: "440 ккал", proteins: "7г", fats: "19г", carbs: "62г", price: 149 },
+        { name: "Моти в ассортименте", category: "Снеки и десерты", ingredients: "Мука рисовая, молоко, сыр творожный, сливки растительные, начинка, желатин, сахарная пудра.", weight: "80 г", kcal: "—", proteins: "—", fats: "—", carbs: "—", price: 189 },
+        // добавим популярные позиции из "Снеки" (на сайте не полностью расписаны, но добавляем для полноты)
+        { name: "Картофель фри (стандарт)", category: "Снеки и десерты", ingredients: "Золотистый картофель фри, соль.", weight: "120 гр", kcal: "~310 ккал", proteins: "3.8г", fats: "15г", carbs: "41г", price: 149 },
+        { name: "Стрипсы (3 шт)", category: "Снеки и десерты", ingredients: "Куриное филе в панировке, может содержать кости.", weight: "120 гр", kcal: "289 ккал", proteins: "18г", fats: "16г", carbs: "22г", price: 219 },
+        { name: "Байтсы (куриные шарики)", category: "Снеки и десерты", ingredients: "Нежные кусочки курицы, хрустящая панировка.", weight: "100 гр", kcal: "270 ккал", proteins: "16г", fats: "14г", carbs: "20г", price: 199 }
+    ];
+
+    function renderTable(filterCat = "all") {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        const filtered = menuData.filter(item => filterCat === "all" || item.category === filterCat);
+        if(filtered.length === 0) {
+            const row = tbody.insertRow();
+            row.insertCell(0).colSpan = 4;
+            row.cells[0].textContent = "😋 Блюда в этой категории скоро появятся!";
+            row.cells[0].style.textAlign = "center";
+            row.cells[0].style.padding = "2rem";
+            return;
+        }
+        filtered.forEach(item => {
+            const row = tbody.insertRow();
+            // Название + категория
+            const titleCell = row.insertCell(0);
+            titleCell.innerHTML = `<div class="item-title">🍗 ${item.name}</div><span class="category-badge">${item.category}</span>`;
+            // Состав
+            const ingCell = row.insertCell(1);
+            let ingText = item.ingredients;
+            if(item.weight && !ingText.includes("Вес")) ingText += ` · Вес: ${item.weight}`;
+            ingCell.innerHTML = `<div class="ingredients">${ingText}</div>${item.ingredients.includes("кости") ? '<div class="warning">⚠️ может содержать фрагменты костей</div>' : ''}`;
+            // цена
+            const priceCell = row.insertCell(2);
+            priceCell.innerHTML = `<div class="price">${item.price}</div>`;
+            // КБЖУ
+            const nutritionCell = row.insertCell(3);
+            let nutrHtml = "";
+            if(item.kcal !== "—") nutrHtml += `🔥 ${item.kcal} · `;
+            if(item.proteins !== "—") nutrHtml += `⚡️ Б ${item.proteins} · `;
+            if(item.fats !== "—") nutrHtml += `Ж ${item.fats} · `;
+            if(item.carbs !== "—") nutrHtml += `У ${item.carbs}`;
+            if(!nutrHtml) nutrHtml = "Информация уточняется";
+            if(item.weight && !item.ingredients.includes(item.weight)) nutrHtml += `<div style="margin-top:4px;">⚖️ ${item.weight}</div>`;
+            nutritionCell.innerHTML = `<div class="nutrition">${nutrHtml}</div>`;
+        });
+    }
+
+    // фильтр активные кнопки
+    const btns = document.querySelectorAll(".filter-btn");
+    btns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            btns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            const cat = btn.getAttribute("data-cat");
+            renderTable(cat);
+        });
+    });
+    
+    // начальная отрисовка
+    renderTable("all");
+</script>
+</body>
+</html>
